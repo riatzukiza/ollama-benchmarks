@@ -33,6 +33,27 @@ For faster testing, use `config.dev.edn` which includes only 2 models and 2 prom
 bb bench_ollama.clj --config config.dev.edn --out-dir reports-dev -n 2
 ```
 
+## PM2
+
+To run the default benchmark suites via PM2:
+
+```bash
+pm2 start ecosystem.config.cjs
+```
+
+Dev watch mode:
+
+```bash
+pm2 start ecosystem.dev.config.cjs
+```
+
+Logs:
+
+- `logs/pm2/basic.out.log` / `logs/pm2/basic.err.log`
+- `logs/pm2/tools.out.log` / `logs/pm2/tools.err.log`
+- `logs/pm2/tool-calling.out.log` / `logs/pm2/tool-calling.err.log`
+- `logs/pm2/dev.out.log` / `logs/pm2/dev.err.log`
+
 ## Usage
 
 ### Regular Text Generation Benchmarks
@@ -207,3 +228,9 @@ Babashka automatically downloads dependencies from `bb.edn`:
 - `babashka/fs` - File system operations  
 - `org.clojure/data.json` - JSON handling
 - `babashka.curl` - HTTP requests (built-in)
+
+## Related projects
+
+- [promethean-agent-system](https://github.com/octave-commons/promethean-agent-system) — shared agent runtime + reusable Ollama logic consumed by this benchmark suite.
+- [promethean-discord-io-bridge](https://github.com/octave-commons/promethean-discord-io-bridge) — Discord tool surface that can be evaluated with the same benchmark DSL.
+- [lineara_conversation_export](https://github.com/octave-commons/lineara_conversation_export) — deterministic run/trace contracts that inform benchmark evaluation structure.

@@ -1,7 +1,7 @@
 #!/usr/bin/env bb
 (ns bench-ollama
   (:require
-    [ollama.client :as ollama]
+    [promethean.ollama.client :as ollama]
     [ollama :as ollama-common]
     [cheshire.core :as json]
     [clojure.java.io :as io]

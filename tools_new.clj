@@ -1,6 +1,6 @@
 (ns my.tools
   (:require
-    [promethean.ollama.tools :refer [def-tool doc domain tags params impl bench benchcase prompt args final-contains no-extras]]))
+    [promethean.ollama.bench-tools :refer [def-tool doc domain tags params impl bench benchcase prompt args final-contains no-extras policy]]))
 
 ;; Math tools with templates
 (def-tool add
@@ -144,7 +144,7 @@
       "write" {:result (str "Wrote content to " path)}
       "list" {:result (str "Files in " path)}
       "delete" {:result (str "Deleted " path)}
-      (default {:error "Unknown operation"}))
+      :default {:error "Unknown operation"}))
   (bench
     (benchcase "file/read"
       (prompt "Read the contents of /tmp/test.txt file.")

@@ -1,0 +1,1 @@
+["^ ","~$check-funapp1",["^ ","~:row",20,"~:col",1,"~:fixed-arities",["~#set",[7]],"~:name","^0","~:ns","~$typed.cljc.checker.check.funapp-one","~:top-ns","^7","~:type","~:fn"],"~:filename","/home/err/.m2/repository/org/typedclojure/typed.clj.checker/1.3.0/typed.clj.checker-1.3.0.jar:typed/cljc/checker/check/funapp_one.clj"]
