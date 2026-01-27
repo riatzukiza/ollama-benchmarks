@@ -30,16 +30,16 @@
 ;; ---- Common CLI parsing ----
 
 (def cli-spec
-  {:config    {:coerce :string :desc "EDN config file with models/prompts"}
-   :out-dir   {:coerce :string :desc "Output directory for reports"}
-   :n         {:coerce :long   :desc "Number of runs per (model,prompt) combo"}
-   :tools     {:coerce :string :desc "EDN file with tool definitions"}
-   :session-id {:coerce :string :desc "Session ID for cumulative runs (auto-generated if not provided)"}
-   :resume    {:coerce :bool   :desc "Resume from existing session"}})
+  [["-c" "--config FILE" "EDN config file with models/prompts" :required true]
+   ["-o" "--out-dir DIR" "Output directory for reports" :required true]
+   ["-n" "--runs N" "Number of runs per (model,prompt) combo" :parse-fn #(Long/parseLong %) :default 3]
+   ["-t" "--tools FILE" "EDN file with tool definitions"]
+   ["-s" "--session-id ID" "Session ID for cumulative runs (auto-generated if not provided)"]
+   ["-r" "--resume" "Resume from existing session"]])
 
 (defn parse-args [args]
   (let [parsed (cli/parse-opts args cli-spec)
-        opts (first parsed)]
+        opts (:options parsed)]
     (when-not (:config opts)
       (println "Missing --config <file>")
       (System/exit 1))
@@ -50,7 +50,7 @@
 
 (defn parse-args-with-tools [args]
   (let [parsed (cli/parse-opts args cli-spec)
-        opts (first parsed)]
+        opts (:options parsed)]
     (when-not (:config opts)
       (println "Missing --config <file>")
       (System/exit 1))
@@ -70,7 +70,7 @@
         body-with-tools (if tools
                         (assoc body :tools tools)
                         body)
-        {:keys [status body]} (curl/post url {:body (json/generate-string body-with-tools)
+        {:keys [status body]} (http/post url {:body (json/generate-string body-with-tools)
                                               :headers {"content-type" "application/json"}
                                               :throw-exceptions false})]
     (if (= 200 status)

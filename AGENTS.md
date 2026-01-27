@@ -364,14 +364,14 @@ The agent framework uses an **async-first execution model** built on core.async 
 ### Individual Agent Usage
 ```clojure
 ;; Basic agent deployment
-(defagent customer-service-agent
+(def-agent customer-service-agent
   (model "gpt-4")
   (instructions "You are a customer service agent. Be helpful and professional.")
   (tools [:customer-db :ticket-system :knowledge-base])
   (max-concurrent-tasks 3))
 
 ;; Supervisor with child agents
-(defsupport agent-support-coordinator
+(def-support agent-support-coordinator
   (agents [:customer-service :technical-support :escalation-specialist])
   (default-model "claude-3")
   (instructions "Coordinate support team for technical and customer issues.")
@@ -381,18 +381,18 @@ The agent framework uses an **async-first execution model** built on core.async 
 ### Agent Team Deployment
 ```clojure
 ;; Multi-tiered support team
-(defagent support-coordinator
+(def-agent support-coordinator
   (agents [:customer-service-agent :technical-support-agent])
   (default-model "gpt-4")
   (instructions "Coordinate the customer service and technical support teams."))
 
-(defagent escalation-specialist
+(def-agent escalation-specialist
   (agents [:technical-support-agent])
   (tools [:diagnostic-tools :system-utilities :debug-tools])
   (default-model "claude-3")
   (instructions "Handle complex technical issues that require specialized knowledge."))
 
-(defagent customer-service-agent
+(def-agent customer-service-agent
   (agents [:customer-service-agent])
   (tools [:customer-db :ticket-system :knowledge-base])
   (parent "support-coordinator")
@@ -404,13 +404,13 @@ The agent framework uses an **async-first execution model** built on core.async 
 ### Tool Registration
 ```clojure
 ;; Agent accessing tools through core framework
-(defagent data-analysis-agent
+(def-agent data-analysis-agent
   (tools [:csv-reader :data-processor :statistical-analysis])
   (parent "support-coordinator")
   (instructions "Analyze customer data and provide insights."))
 
 ;; Tool agents within agent ecosystem
-(deftool sales-report-generator
+(def-tool sales-report-generator
   (agent "customer-service-agent")
   (parent "support-coordinator")
   (instructions "Generate sales reports using customer data.")
@@ -420,13 +420,13 @@ The agent framework uses an **async-first execution model** built on core.async 
 ### Event Integration
 ```clojure
 ;; Agent events logged to core event system
-(defagent customer-service-agent
+(def-agent customer-service-agent
   (events [{:agent/lifecycle :agent/communication :tool/requested :tool/result}]
   (parent "support-coordinator"))
   (instructions "All events are logged to the support coordinator."))
 
 ;; Supervisor events
-(defsupport agent-support-coordinator
+(def-support agent-support-coordinator
   (events [{:supervisor/delegate :supervisor/resource :agent/status :agent/communication}])
   (instructions "Coordinate agent team activities and resource allocation."))
 ```
@@ -447,7 +447,6 @@ The agent framework uses an **async-first execution model** built on core.async 
  :conversation/history [...]
  :last-event-id "last-processed-event"
  :last-snapshot-id "last-state-snapshot"}
-}
 ```
 
 ## Security Model
