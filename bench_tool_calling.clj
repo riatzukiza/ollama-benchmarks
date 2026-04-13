@@ -12,8 +12,8 @@
     [clojure.edn :as edn]
     [clojure.java.io :as io]
     [clojure.string :as str]
-     [ollama.client :as ollama]
-     [ollama.tools :as tools])
+    [promethean.ollama.client :as ollama]
+    [promethean.ollama.bench-tools :as tools])
    (:import
      (java.time Instant Duration)))
 
@@ -113,7 +113,7 @@
   (load-file tools-file)
   (let [n (count (tools/tools))]
     (when (zero? n)
-      (throw (ex-info "Loaded tools.clj but no tools were registered. Did you use ollama.tools/def-tool ?"
+      (throw (ex-info "Loaded tools.clj but no tools were registered. Did you use promethean.ollama.bench-tools/def-tool ?"
                       {:tools-file tools-file})))
     n))
 

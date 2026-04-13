@@ -1,5 +1,5 @@
 (ns my-bench-tools
-  (:require [ollama.tools :refer [def-tool]]))
+  (:require [promethean.ollama.bench-tools :refer [def-tool]]))
 
 ;; Simple tool definitions with implementations
 
