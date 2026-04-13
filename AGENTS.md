@@ -364,14 +364,14 @@ The agent framework uses an **async-first execution model** built on core.async 
 ### Individual Agent Usage
 ```clojure
 ;; Basic agent deployment
-(defagent customer-service-agent
+(def-agent customer-service-agent
   (model "gpt-4")
   (instructions "You are a customer service agent. Be helpful and professional.")
   (tools [:customer-db :ticket-system :knowledge-base])
   (max-concurrent-tasks 3))
 
 ;; Supervisor with child agents
-(defsupport agent-support-coordinator
+(def-support agent-support-coordinator
   (agents [:customer-service :technical-support :escalation-specialist])
   (default-model "claude-3")
   (instructions "Coordinate support team for technical and customer issues.")
@@ -381,18 +381,18 @@ The agent framework uses an **async-first execution model** built on core.async 
 ### Agent Team Deployment
 ```clojure
 ;; Multi-tiered support team
-(defagent support-coordinator
+(def-agent support-coordinator
   (agents [:customer-service-agent :technical-support-agent])
   (default-model "gpt-4")
   (instructions "Coordinate the customer service and technical support teams."))
 
-(defagent escalation-specialist
+(def-agent escalation-specialist
   (agents [:technical-support-agent])
   (tools [:diagnostic-tools :system-utilities :debug-tools])
   (default-model "claude-3")
   (instructions "Handle complex technical issues that require specialized knowledge."))
 
-(defagent customer-service-agent
+(def-agent customer-service-agent
   (agents [:customer-service-agent])
   (tools [:customer-db :ticket-system :knowledge-base])
   (parent "support-coordinator")
@@ -404,13 +404,13 @@ The agent framework uses an **async-first execution model** built on core.async 
 ### Tool Registration
 ```clojure
 ;; Agent accessing tools through core framework
-(defagent data-analysis-agent
+(def-agent data-analysis-agent
   (tools [:csv-reader :data-processor :statistical-analysis])
   (parent "support-coordinator")
   (instructions "Analyze customer data and provide insights."))
 
 ;; Tool agents within agent ecosystem
-(deftool sales-report-generator
+(def-tool sales-report-generator
   (agent "customer-service-agent")
   (parent "support-coordinator")
   (instructions "Generate sales reports using customer data.")
@@ -420,13 +420,13 @@ The agent framework uses an **async-first execution model** built on core.async 
 ### Event Integration
 ```clojure
 ;; Agent events logged to core event system
-(defagent customer-service-agent
+(def-agent customer-service-agent
   (events [{:agent/lifecycle :agent/communication :tool/requested :tool/result}]
   (parent "support-coordinator"))
   (instructions "All events are logged to the support coordinator."))
 
 ;; Supervisor events
-(defsupport agent-support-coordinator
+(def-support agent-support-coordinator
   (events [{:supervisor/delegate :supervisor/resource :agent/status :agent/communication}])
   (instructions "Coordinate agent team activities and resource allocation."))
 ```
@@ -447,7 +447,6 @@ The agent framework uses an **async-first execution model** built on core.async 
  :conversation/history [...]
  :last-event-id "last-processed-event"
  :last-snapshot-id "last-state-snapshot"}
-}
 ```
 
 ## Security Model
@@ -575,75 +574,3 @@ clj -M -m my.supervisor.system \
 - **Health Monitoring**: Continuous health checks with automatic recovery
 - **Observability**: Comprehensive logging and metrics collection
 - **Security Hardening**: Follow security best practices for distributed systems
-## RELEVANT SKILLS
-These skills are configured for this directory's technology stack and workflow.
-
-### clojure-namespace-architect
-Resolves Clojure namespace-path mismatches and classpath errors with definitive path conversion
-
-### clojure-quality
-Auto-fix Clojure delimiters and validate syntax with OpenCode tools.
-
-### clojure-syntax-rescue
-Protocol to recover from Clojure/Script syntax errors, specifically bracket mismatches and EOF errors.
-
-### create-pm2-clj-config
-Create new pm2-clj ecosystem configuration files from scratch or templates for PM2 process management
-
-### create-pm2-ecosystem
-Create new PM2 ecosystem configuration files for the clobber-based system with proper defapp definitions
-
-### git-safety-check
-Protocol to ensure safe git operations and avoid detached HEAD or dirty commits.
-
-### github-integration
-Perform GitHub operations across all tracked repositories in orgs/**, including issue/PR management, repository synchronization, and automation workflows
-
-### pm2-process-management
-Start, stop, restart, and manage PM2 processes using the ecosystem-based configuration system
-
-### render-pm2-clj-config
-Render pm2-clj ecosystem files to JSON for validation and debugging without starting processes
-
-### submodule-ops
-Make safe, consistent changes in a workspace with many git submodules under orgs/**
-
-### test-preservation
-Protocol to forbid deleting or skipping tests to make builds pass.
-
-### testing-bun
-Set up and write tests using Bun's built-in test runner for maximum performance and TypeScript support
-
-### testing-clojure-cljs
-Set up and write tests for Clojure and ClojureScript projects using cljs.test, cljs-init-tests, and shadow-cljs
-
-### testing-e2e
-Write end-to-end tests that verify complete user workflows and critical system paths across the full stack
-
-### testing-general
-Apply testing best practices, choose appropriate test types, and establish reliable test coverage across the codebase
-
-### testing-integration
-Write integration tests that verify multiple components work together correctly with real dependencies
-
-### testing-nx
-Configure and run tests across multiple projects using Nx affected detection for efficient workspace testing
-
-### testing-typescript-ava
-Set up and write tests using Ava test runner for TypeScript with minimal configuration and fast execution
-
-### testing-typescript-vitest
-Set up and write tests using Vitest for TypeScript projects with proper configuration and TypeScript support
-
-### testing-unit
-Write fast, focused unit tests for individual functions, classes, and modules with proper isolation and mocking
-
-### work-on-in_progress-task
-Execute the best next work for a task currently in `in_progress`.
-
-### work-on-todo-task
-Execute the best next work for a task currently in `todo`.
-
-### workspace-lint
-Lint all TypeScript and markdown files across the entire workspace, including all submodules under orgs/**
-

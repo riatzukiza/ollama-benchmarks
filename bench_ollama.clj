@@ -42,7 +42,7 @@
                     :eval_count eval-count
                     :eval_duration_ns eval-dur-ns
                     :tps tps}))]
-    (logger/log-request-end request-id model prompt result)
+(logger/log-request-end request-id model prompt result)
     (logger/stream-request-result session-id model prompt run-number result)
     result))
 
@@ -62,6 +62,16 @@
                 :prompt prompt
                 :runs runs
                 :summary summary}]
+    ;; Update session metadata with completed combo results
+    (when-let [metadata (logger/load-session-metadata "reports" session-id)]
+      (let [session-results (get metadata :session/results {})
+            results-key (str model "|" prompt)
+            updated-session-results (assoc session-results results-key result)
+            updated-metadata (-> metadata
+                              (assoc :session/results updated-session-results)
+                              (update :session/completed-runs + n)
+                              (assoc :session/last-updated (System/currentTimeMillis)))]
+        (logger/save-session-metadata updated-metadata "reports")))
     (logger/stream-summary session-id model prompt summary)
     (logger/log-summary model prompt summary {:benchmark-type "basic"})
     result))
@@ -79,28 +89,31 @@
 (defn bench-all-cumulative
   "Handle cumulative benchmark runs with session management."
   [{:keys [endpoint models prompts n session-id resume out-dir]}]
-  (let [existing-metadata (when resume 
-                            (logger/load-session-metadata out-dir session-id))
+  (let [existing-metadata (logger/load-session-metadata out-dir session-id)
         metadata (or existing-metadata
                     (logger/create-session-metadata "basic" 
                                                  {:endpoint endpoint :models models :prompts prompts :n n}
                                                  out-dir
                                                  session-id))
         _ (logger/save-session-metadata metadata out-dir)]
-    (if existing-metadata
-      (do
-        (println "Resuming session" session-id "with" (:session/completed-runs existing-metadata) "completed runs")
-        (logger/get-session-results existing-metadata))
-      (let [results (vec (bench-all {:endpoint endpoint
+    (let [existing-results (when existing-metadata 
+                            (:session/results existing-metadata))
+          new-results (vec (bench-all {:endpoint endpoint
                                      :models models
                                      :prompts prompts
                                      :n n
-                                     :session-id session-id}))]
-        (-> metadata
-            (assoc :session/results results)
-            (assoc :session/completed-runs (* (count models) (count prompts) n))
-            (logger/update-session-metadata out-dir))
-        results))))
+                                     :session-id session-id}))
+          all-results (concat existing-results new-results)
+          total-completed (+ (:session/completed-runs metadata 0) 
+                          (* (count models) (count prompts) n))]
+      (println (if existing-metadata 
+                 (str "Resuming session " session-id " with " (:session/completed-runs existing-metadata) " completed runs, adding " (* (count models) (count prompts) n) " more")
+                 (str "Starting new session " session-id)))
+      (-> metadata
+          (assoc :session/results (vec all-results))
+          (assoc :session/completed-runs total-completed)
+          (logger/update-session-metadata out-dir))
+      (vec all-results))))
 
 ;; ---- Entry point ----
 
@@ -123,10 +136,11 @@
         total-runs (* (count models) (count prompts) n)
         _ (logger/log-benchmark-end "basic" total-runs (- end-time start-time))
         session-metadata (logger/load-session-metadata out-dir session-id)
-        out-base (java.io.File. out-dir (str "ollama-bench-" session-id))
-        edn-file (.getPath (java.io.File. out-base ".edn"))
-        json-file (.getPath (java.io.File. out-base ".json"))
-        md-file (.getPath (java.io.File. out-base ".md"))]
+        out-base-str (str "ollama-bench-" session-id)
+        out-base-file (java.io.File. out-dir out-base-str)
+        edn-file (str out-dir "/" out-base-str ".edn")
+        json-file (str out-dir "/" out-base-str ".json")
+        md-file (str out-dir "/" out-base-str ".md")]
     (spit edn-file (pr-str results))
     (spit json-file (json/generate-string results {:pretty true}))
     (spit md-file (ollama-common/md-table results))

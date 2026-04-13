@@ -1,40 +1,41 @@
-#!/usr/bin/env bb
 (ns aggregate-reports
   (:require
     [clojure.edn :as edn]
     [clojure.string :as str]
-    [cheshire.core :as json]
-    [babashka.fs :as fs]))
+    [cheshire.core :as json]))
 
 (defn read-reports-from-dir [dir]
-  (let [files (->> (fs/list-dir dir)
-                   (filter #(and (not (fs/directory? %))
-                               (re-find #"-bench\.(json|edn)$" (fs/file-name %)))))]
+  (let [dir-file (java.io.File. dir)
+        files (->> (.listFiles dir-file)
+                   (filter #(.isFile %))
+                   (map #(.getName %))
+                   (filter #(re-find #"-bench\.(json|edn)$" %)))]
     (reduce
-      (fn [acc file]
-        (let [base-name (-> file fs/file-name (str/replace #"-bench\.(json|edn)$" ""))]
+      (fn [acc file-name]
+        (let [base-name (str/replace file-name #"-bench\.(json|edn)$" "")
+              file-path (str dir "/" file-name)]
           (try
-            (let [content (slurp file)]
-              (if (str/ends-with? (fs/file-name file) ".json")
+            (let [content (slurp file-path)]
+              (if (str/ends-with? file-name ".json")
                 (assoc acc base-name (json/parse-string content keyword))
                 (assoc acc base-name (edn/read-string content))))
             (catch Exception e
-              (println "Warning: Could not read file" file ":" (.getMessage e))
+              (println "Warning: Could not read file" file-path ":" (.getMessage e))
               acc))))
       {}
       files)))
 
 (defn find-all-report-dirs []
-  (->> (fs/list-dir ".")
-       (filter fs/directory?)
-       (filter #(re-find #"^reports.*" (fs/file-name %)))))
+  (->> (.listFiles (java.io.File. "."))
+       (filter #(.isDirectory %))
+       (map #(.getName %))
+       (filter #(re-find #"^reports.*" %))))
 
 (defn aggregate-all-reports []
   (let [report-dirs (find-all-report-dirs)
         all-data (reduce
-                   (fn [acc dir]
-                     (let [dir-name (fs/file-name dir)
-                           reports (read-reports-from-dir dir)]
+                   (fn [acc dir-name]
+                     (let [reports (read-reports-from-dir dir-name)]
                        (assoc acc dir-name reports)))
                    {}
                    report-dirs)]
@@ -42,26 +43,37 @@
 
 (defn calculate-model-stats [all-data]
   (reduce-kv
-    (fn [stats dir-name reports]
+    (fn [stats dir-name report-map]
+      (println "DEBUG: Processing dir" dir-name "with" (count report-map) "report types")
       (reduce-kv
-        (fn [inner-stats report-name report-data]
+        (fn [inner-stats report-type report-items]
+          (println "DEBUG: Processing report type" report-type "with" (count report-items) "items")
           (reduce
-            (fn [model-stats item]
-              (let [model (:model item)
-                    model-key (keyword model)
-                    tps (:tps item)
-                    duration (:duration_ms item)
-                    ok? (:ok item)]
-                (-> model-stats
-                    (update-in [model-key :total_runs] (fnil + 0) 1)
-                    (update-in [model-key :successful_runs] (fnil + 0) (if ok? 1 0))
-                    (update-in [model-key :total_tps] (fnil + 0) (or tps 0))
-                    (update-in [model-key :total_duration] (fnil + 0) (or duration 0))
-                    (update-in [model-key :report_types] (fnil conj #{}) report-name))))
+            (fn [model-stats report-item]
+              (let [model (:model report-item)
+                    runs (:runs report-item)]
+                (if runs
+                  (do
+                    (println "DEBUG: Processing model" model "with" (count runs) "runs")
+                    (reduce
+                      (fn [run-stats item]
+                        (let [model-key (keyword model)
+                              tps (:tps item)
+                              duration (:duration_ms item)
+                              ok? (:ok item)]
+                          (-> run-stats
+                              (update-in [model-key :total_runs] (fnil + 0) 1)
+                              (update-in [model-key :successful_runs] (fnil + 0) (if ok? 1 0))
+                              (update-in [model-key :total_tps] (fnil + 0) (or tps 0))
+                              (update-in [model-key :total_duration] (fnil + 0) (or duration 0))
+                              (update-in [model-key :report_types] (fnil conj #{}) report-type))))
+                      model-stats
+                      runs))
+                  model-stats)))
             inner-stats
-            report-data))
+            report-items))
         stats
-        reports))
+        report-map))
     {}
     all-data))
 
@@ -76,34 +88,39 @@
         (assoc final model
                {:total_runs total-runs
                 :successful_runs successful-runs
-                :success_rate success-rate
-                :mean_tps mean-tps
-                :mean_duration_ms mean-duration
+                :success_rate (double success-rate)
+                :mean_tps (double mean-tps)
+                :mean_duration_ms (double mean-duration)
                 :report_types (:report_types data)})))
     {}
     model-stats))
 
 (defn extract-error-patterns [all-data]
   (reduce-kv
-    (fn [errors dir-name reports]
+    (fn [errors dir-name report-map]
       (reduce-kv
-        (fn [inner-errors report-name report-data]
+        (fn [inner-errors report-type report-items]
           (reduce
-            (fn [model-errors item]
-              (let [model (:model item)
-                    error-info (when-not (:ok item)
-                               {:status (:status item)
-                                :error-type (cond
-                                             (= 400 (:status item)) :bad_request
-                                             (= 500 (:status item)) :server_error
-                                             :else :unknown_error)})]
-                (if error-info
-                  (update-in model-errors [model] (fnil conj []) {:report report-name :error error-info :prompt (:prompt item)})
-                  model-errors)))
+            (fn [model-errors report-item]
+              (let [model (:model report-item)
+                    runs (:runs report-item)]
+                (reduce
+                  (fn [run-errors item]
+                    (let [error-info (when-not (:ok item)
+                                       {:status (:status item)
+                                        :error-type (cond
+                                                     (= 400 (:status item)) :bad_request
+                                                     (= 500 (:status item)) :server_error
+                                                     :else :unknown_error)})]
+                      (if error-info
+                        (update-in run-errors [model] (fnil conj []) {:report report-type :error error-info :prompt (:prompt item)})
+                        run-errors)))
+                  model-errors
+                  runs)))
             inner-errors
-            report-data))
+            report-items))
         errors
-        reports))
+        report-map))
     {}
     all-data))
 
@@ -144,19 +161,19 @@
          "This report aggregates findings from all benchmark reports across different test types.\n\n"
          "### Overall Model Performance\n\n"
          "| Model | Total Runs | Successful | Success Rate | Mean TPS | Mean Duration (ms) | Report Types |\n"
-         "|---|---|---|---|---|---|---|\n"
+         "|---|---|---|---|---|---|\n"
          (->> model-stats
-              (sort-by (fn [[_ data]] (:mean_tps data)) >)
-              (map (fn [[model data]]
-                     (format "| `%s` | %d | %d | %.1f%% | %.2f | %.1f | %s |\n"
-                             model
-                             (:total_runs data)
-                             (:successful_runs data)
-                             (* (:success_rate data) 100)
-                             (:mean_tps data)
-                             (:mean_duration_ms data)
-                             (str/join ", " (:report_types data)))))
-              (apply str))
+               (sort-by (fn [[_ data]] (or (:mean_tps data) 0)) >)
+               (map (fn [[model data]]
+                      (format "| `%s` | %d | %d | %.1f%% | %.2f | %.1f | %s |\n"
+                              model
+                              (:total_runs data)
+                              (:successful_runs data)
+                              (* (or (:success_rate data) 0) 100)
+                              (or (:mean_tps data) 0.0)
+                              (or (:mean_duration_ms data) 0.0)
+                              (str/join ", " (:report_types data)))))
+               (apply str))
          "\n## Detailed Findings\n\n"
          (->> all-data
               (mapcat (fn [[dir-name reports]]
@@ -197,7 +214,7 @@
         model-stats (-> all-data calculate-model-stats finalize-model-stats)
         report-content (generate-comprehensive-report all-data model-stats)]
     
-    (fs/create-dirs out-dir)
+    (.mkdirs (java.io.File. out-dir))
     
     ;; Save aggregated data
     (spit (str out-dir "/all-reports.json") (json/generate-string all-data {:pretty true}))
@@ -209,5 +226,7 @@
     (println "- model-stats.json: Model performance statistics")
     (println "- comprehensive-report.md: Human-readable analysis")))
 
-(when (= *file* (System/getProperty "babashka.file"))
+(when (and (bound? #'*file*)
+           *file*
+           (not= *file* "NO_SOURCE_PATH"))
   (apply -main *command-line-args*))

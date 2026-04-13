@@ -1,6 +1,6 @@
 # Comprehensive Ollama Benchmark Report
 
-Generated: 2026-01-25T23:58:16.978550713Z
+Generated: 2026-01-26T18:00:22.829578094Z
 
 ## Summary
 
@@ -9,15 +9,41 @@ This report aggregates findings from all benchmark reports across different test
 ### Overall Model Performance
 
 | Model | Total Runs | Successful | Success Rate | Mean TPS | Mean Duration (ms) | Report Types |
-|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|
+| `:llama3.2:latest` | 28 | 28 | 100.0% | 97.49 | 17362.2 | ollama, ollama-tool-eval |
+| `:qwen3:4b` | 34 | 34 | 100.0% | 74.66 | 30178.2 | ollama, ollama-tools, ollama-tool-eval |
+| `:gemma3:latest` | 32 | 12 | 37.5% | 27.37 | 2838.3 | ollama, ollama-tool-eval |
 
 ## Detailed Findings
+
+### Ollama (reports)
+
+Total test cases: 12
+
+### Ollama tool eval (reports-simple-tool-eval)
+
+Total test cases: 1
+
+### Ollama tool eval (reports-tool-eval)
+
+Total test cases: 30
+
+### Ollama tools (reports-simple-tools)
+
+Total test cases: 1
+
+### Ollama (reports-dev)
+
+Total test cases: 4
 
 
 ## Analysis
 
 ### Model Performance Analysis
 
+1. **:llama3.2:latest** - 97.49 TPS, 100.0% success rate
+2. **:qwen3:4b** - 74.66 TPS, 100.0% success rate
+3. **:gemma3:latest** - 27.37 TPS, 37.5% success rate
 ### Error Analysis: qwen3:4b-instruct-100k and gpt-oss:20b-cloud
 
 #### qwen3:4b Error Patterns

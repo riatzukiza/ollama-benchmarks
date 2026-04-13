@@ -2,17 +2,49 @@
 
 A comprehensive benchmarking suite for evaluating Ollama models with text generation and tool calling capabilities.
 
+## ✨ Key Features
+
+- **🔄 Real-time Streaming**: Watch results appear as each request completes
+- **💾 Session Management**: Resume interrupted benchmarks without data loss  
+- **📊 Cumulative Results**: Multiple runs build better statistics
+- **🚀 High Performance**: Native Clojure execution for reliability
+- **📈 Advanced Analytics**: Comprehensive aggregation and reporting
+
+## 🔥 Quick Start
+
+```bash
+# Install dependencies and run basic benchmark
+clj -M -m bench-ollama --config config.dev.edn --out-dir reports -n 3
+
+# Aggregate all results for analysis  
+clj -M -m aggregate-reports aggregated-reports
+```
+
 ## Requirements
 
-- Babashka (install from https://babashka.org/)
-- Ollama server running locally or at specified endpoint
-- Models pulled in Ollama (e.g., `ollama pull llama3`)
+- **Clojure** (JDK 17+ required)
+- **Ollama server** running locally or at specified endpoint  
+- **Models** pulled in Ollama (e.g., `ollama pull llama3`)
+
+### Installation
+
+```bash
+# Install Clojure (if not already installed)
+curl -L -O https://github.com/clojure/brew-install/releases/latest/download/linux-install.sh
+chmod +x linux-install.sh
+sudo ./linux-install.sh
+
+# Or using package manager
+sudo apt install clojure  # Ubuntu/Debian
+brew install clojure          # macOS
+```
 
 ## Setup
 
 1. Clone this repository
-2. Configure your models and prompts in `config.edn`
-3. Run the benchmark
+2. Install Clojure (see Installation section above)
+3. Configure your models and prompts in `config.edn`
+4. Run the benchmark
 
 ## Configuration
 
@@ -22,15 +54,15 @@ Edit `config.edn` for full benchmarks or use `config.dev.edn` for quick testing:
 {:endpoint "http://localhost:11434"  ; Ollama server URL
  :models   ["qwen3:4b" "llama3.2:latest" "gemma3:latest"]   ; Models to benchmark
  :prompts  ["Hello world"            ; Prompts to test
-            "Explain babashka in two sentences."
-            "Write a simple Python function to calculate factorial."]}
+             "Explain babashka in two sentences."
+             "Write a simple Python function to calculate factorial."]}
 ```
 
 ### Quick Development Testing
 For faster testing, use `config.dev.edn` which includes only 2 models and 2 prompts:
 
 ```bash
-bb bench_ollama.clj --config config.dev.edn --out-dir reports-dev -n 2
+clj -M -m bench-ollama --config config.dev.edn --out-dir reports-dev -n 2
 ```
 
 ## PM2
@@ -60,43 +92,85 @@ Logs:
 
 ```bash
 # Quick development testing (2 models, 2 prompts)
-bb bench_ollama.clj --config config.dev.edn --out-dir reports-dev -n 2
+clj -M -m bench-ollama --config config.dev.edn --out-dir reports-dev -n 2
 
 # Full benchmark testing (10 models, 10 prompts)
-bb bench_ollama.clj --config config.edn --out-dir reports -n 3
+clj -M -m bench-ollama --config config.edn --out-dir reports -n 3
 
 # Custom number of runs per (model, prompt) combo
-bb bench_ollama.clj --config config.edn --out-dir reports -n 5
+clj -M -m bench-ollama --config config.edn --out-dir reports -n 5
 ```
+
+### Session Management & Cumulative Runs
+
+```bash
+# Start new session (auto-generates session ID)
+clj -M -m bench-ollama --config config.edn --out-dir reports -n 3
+
+# Resume existing session and add more runs
+clj -M -m bench-ollama --config config.edn --out-dir reports -n 2 --session-id session-xxx --resume
+
+# Resume with specific session ID
+clj -M -m bench-ollama --config config.edn --out-dir reports -n 1 --session-id my-custom-session --resume
+```
+
+**Key Features:**
+- **Real-time Streaming**: Results appear immediately as each request completes
+- **Session Persistence**: All results saved to `session-{id}-metadata.json`
+- **Recovery**: Resume interrupted sessions without losing data
+- **Cumulative**: Multiple runs append to same session for better statistics
 
 ### Tool Calling Benchmarks
 
 ```bash
 # Tool calling evaluation with default tools (schema only)
-bb bench_tools.clj --config config.tools.edn --tools tools.clj --out-dir reports-tools -n 2
+clj -M -m bench-tools --config config.tools.edn --tools tools.clj --out-dir reports-tools -n 2
 
 # Tool calling with custom config and tools
-bb bench_tools.clj --config my-config.edn --tools my-tools.clj --out-dir results -n 3
+clj -M -m bench-tools --config my-config.edn --tools my-tools.clj --out-dir results -n 3
 
 # Advanced tool evaluation with implementations (def-tool format)
-bb bench_tool_calling.clj --model qwen3:4b --tools my_bench_tools.clj --out-dir reports-tool-calling -n 1
+clj -M -m bench-tool-calling --model qwen3:4b --tools my_bench_tools.clj --out-dir reports-tool-calling -n 1
 
 # Legacy tool evaluation (deprecated)
-bb bench_tool_eval.clj --config config.tool_eval.edn --tools tools_with_impl.clj --out-dir reports-tool-eval -n 2
+clj -M -m bench-tool-eval --config config.tool_eval.edn --tools tools_with_impl.clj --out-dir reports-tool-eval -n 2
 
 # Help
-bb bench_ollama.clj --help
-bb bench_tools.clj --help
-bb bench_tool_calling.clj --help
+clj -M -m bench-ollama --help
+clj -M -m bench-tools --help
+clj -M -m bench-tool-calling --help
 ```
 
 ## Output
 
-The benchmark scripts generate three files in each output directory:
+The benchmark scripts generate multiple files:
 
-- `*-bench.json` - Raw JSON data with all runs and metrics
-- `*-bench.edn` - Same data in EDN format for Clojure consumption  
-- `*-bench.md` - Human-readable markdown report with summary table
+### Session Files
+- `session-{id}-metadata.json` - Session metadata with cumulative results and state
+
+### Benchmark Results  
+- `ollama-bench-{session-id}.json` - Raw JSON data with all runs and metrics
+- `ollama-bench-{session-id}.edn` - Same data in EDN format for Clojure consumption  
+- `ollama-bench-{session-id}.md` - Human-readable markdown report with summary table
+
+### Real-time Output
+During execution, you'll see:
+- Individual request results as they complete (session ID, model, run number, metrics)
+- Progress summaries for each model/prompt combination  
+- Session start/end notifications with completion statistics
+
+### Migration from Babashka
+
+The benchmark suite has been migrated from Babashka to Clojure proper for:
+- **Better Performance**: Native JVM execution for long-running benchmarks
+- **Enhanced Session Management**: Robust state persistence and recovery
+- **Improved Error Handling**: Better exception handling and debugging
+- **Cross-platform Compatibility**: Works anywhere Java runs
+
+**Breaking Changes:**
+- All commands now use `clj -M` instead of `bb`
+- Session files use JSON instead of EDN for metadata
+- Some CLI argument formats updated (see examples above)
 
 ### Report Formats
 
@@ -210,27 +284,36 @@ Generate a comprehensive report aggregating all benchmark results:
 
 ```bash
 # Aggregate all reports from reports/ directories
-bb aggregate_reports.clj
+clj -M -m aggregate-reports aggregated-reports
 
 # Specify custom output directory
-bb aggregate_reports.clj my-aggregated-reports
+clj -M -m aggregate-reports my-aggregated-reports
 ```
 
 This creates:
 - `all-reports.json` - Combined raw data from all report directories
-- `model-stats.json` - Model performance statistics across all tests
+- `model-stats.json` - Model performance statistics across all tests  
 - `comprehensive-report.md` - Human-readable analysis with rankings and insights
+
+### Session-Based Analysis
+
+The aggregation system now works with session-based results:
+- Each session contains cumulative runs across multiple executions
+- Results are organized by model/prompt combinations
+- Statistical significance improves with more data points
+- Supports interrupted/restarted benchmark workflows
 
 ## Dependencies
 
-Babashka automatically downloads dependencies from `bb.edn`:
-- `org.babashka/cli` - CLI parsing
-- `babashka/fs` - File system operations  
-- `org.clojure/data.json` - JSON handling
-- `babashka.curl` - HTTP requests (built-in)
+### Clojure Dependencies
+Dependencies are managed through `deps.edn`:
+- `org.clojure/clojure` - Core Clojure runtime
+- `clj-http/clj-http` - HTTP client for API requests
+- `cheshire/cheshire` - JSON parsing and generation
+- `org.clojure/tools.cli` - Command-line argument parsing
+- `org.clojure/tools.logging` - Logging framework
 
-## Related projects
-
-- [promethean-agent-system](https://github.com/octave-commons/promethean-agent-system) — shared agent runtime + reusable Ollama logic consumed by this benchmark suite.
-- [promethean-discord-io-bridge](https://github.com/octave-commons/promethean-discord-io-bridge) — Discord tool surface that can be evaluated with the same benchmark DSL.
-- [lineara_conversation_export](https://github.com/octave-commons/lineara_conversation_export) — deterministic run/trace contracts that inform benchmark evaluation structure.
+### Session Management
+- Session metadata stored in JSON format for cross-platform compatibility
+- Real-time result streaming during benchmark execution
+- Automatic session recovery from interruptions

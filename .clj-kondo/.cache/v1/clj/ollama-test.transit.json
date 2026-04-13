@@ -1,0 +1,1 @@
+["^ ","~$mean-handles-empty-and-values",["^ ","~:row",6,"~:col",1,"~:fixed-arities",["~#set",[0]],"~:name","^0","~:ns","~$ollama-test","~:top-ns","^7"],"~$md-table-sanitizes-prompts-and-formats-numbers",["^ ","^1",12,"^2",1,"^3",["^4",[0]],"^5","^9","^6","^7","^8","^7"],"~:filename","/home/err/devel/orgs/riatzukiza/ollama-benchmarks/test/ollama_test.clj"]
