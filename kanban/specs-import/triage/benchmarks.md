@@ -1,3 +1,17 @@
+---
+uuid: "orgs-riatzukiza-ollama-benchmarks-kanban-orgs-riatzukiza-ollama-benchmarks-specs-triage-benchmarks-md"
+title: "Benchmark System Specification"
+status: incoming
+priority: P3
+labels: ["specs", "migrated-spec"]
+created_at: "2026-05-29T04:01:01.501Z"
+source: "orgs/riatzukiza/ollama-benchmarks/specs/triage/benchmarks.md"
+category: "specs"
+---
+
+> Source: `orgs/riatzukiza/ollama-benchmarks/specs/triage/benchmarks.md`
+> Migrated-to-kanban: `orgs/riatzukiza/ollama-benchmarks/kanban/specs-import/triage/benchmarks.md`
+
 # Benchmark System Specification
 
 **Status**: DRAFT  

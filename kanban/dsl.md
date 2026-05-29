@@ -1,3 +1,17 @@
+---
+uuid: "orgs-riatzukiza-ollama-benchmarks-kanban-orgs-riatzukiza-ollama-benchmarks-spec-dsl-md"
+title: "DSL Authoring Layer"
+status: incoming
+priority: P3
+labels: ["specs", "migrated-spec"]
+created_at: "2026-05-29T04:01:00.138Z"
+source: "orgs/riatzukiza/ollama-benchmarks/spec/dsl.md"
+category: "specs"
+---
+
+> Source: `orgs/riatzukiza/ollama-benchmarks/spec/dsl.md`
+> Migrated-to-kanban: `orgs/riatzukiza/ollama-benchmarks/kanban/dsl.md`
+
 # DSL Authoring Layer
 
 **Version**: 1.0.0  

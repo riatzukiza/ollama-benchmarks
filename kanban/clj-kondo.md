@@ -1,3 +1,17 @@
+---
+uuid: "orgs-riatzukiza-ollama-benchmarks-kanban-orgs-riatzukiza-ollama-benchmarks-spec-clj-kondo-md"
+title: "clj-kondo Support"
+status: incoming
+priority: P3
+labels: ["specs", "migrated-spec"]
+created_at: "2026-05-29T04:01:00.141Z"
+source: "orgs/riatzukiza/ollama-benchmarks/spec/clj-kondo.md"
+category: "specs"
+---
+
+> Source: `orgs/riatzukiza/ollama-benchmarks/spec/clj-kondo.md`
+> Migrated-to-kanban: `orgs/riatzukiza/ollama-benchmarks/kanban/clj-kondo.md`
+
 # clj-kondo Support
 
 **Version**: 1.0.0  

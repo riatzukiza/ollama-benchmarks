@@ -1,3 +1,17 @@
+---
+uuid: "orgs-riatzukiza-ollama-benchmarks-kanban-orgs-riatzukiza-ollama-benchmarks-spec-cicd-md"
+title: "CI/CD Specification"
+status: incoming
+priority: P3
+labels: ["specs", "migrated-spec"]
+created_at: "2026-05-29T04:01:00.140Z"
+source: "orgs/riatzukiza/ollama-benchmarks/spec/cicd.md"
+category: "specs"
+---
+
+> Source: `orgs/riatzukiza/ollama-benchmarks/spec/cicd.md`
+> Migrated-to-kanban: `orgs/riatzukiza/ollama-benchmarks/kanban/cicd.md`
+
 # CI/CD Specification
 
 **Version**: 1.0.0  

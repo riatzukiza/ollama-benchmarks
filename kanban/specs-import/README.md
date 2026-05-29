@@ -1,3 +1,17 @@
+---
+uuid: "orgs-riatzukiza-ollama-benchmarks-kanban-orgs-riatzukiza-ollama-benchmarks-specs-readme-md"
+title: "Specifications Organization"
+status: incoming
+priority: P3
+labels: ["specs", "migrated-spec"]
+created_at: "2026-05-29T04:01:01.501Z"
+source: "orgs/riatzukiza/ollama-benchmarks/specs/README.md"
+category: "specs"
+---
+
+> Source: `orgs/riatzukiza/ollama-benchmarks/specs/README.md`
+> Migrated-to-kanban: `orgs/riatzukiza/ollama-benchmarks/kanban/specs-import/README.md`
+
 # Specifications Organization
 
 This folder contains technical specifications derived from the documented implementation in `docs/notes/`.

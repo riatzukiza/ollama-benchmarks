@@ -1,3 +1,17 @@
+---
+uuid: "orgs-riatzukiza-ollama-benchmarks-kanban-orgs-riatzukiza-ollama-benchmarks-specs-review-dependencies-md"
+title: "Dependencies Specification"
+status: incoming
+priority: P3
+labels: ["specs", "migrated-spec"]
+created_at: "2026-05-29T04:01:01.499Z"
+source: "orgs/riatzukiza/ollama-benchmarks/specs/review/dependencies.md"
+category: "specs"
+---
+
+> Source: `orgs/riatzukiza/ollama-benchmarks/specs/review/dependencies.md`
+> Migrated-to-kanban: `orgs/riatzukiza/ollama-benchmarks/kanban/specs-import/review/dependencies.md`
+
 # Dependencies Specification
 
 **Status**: DRAFT  

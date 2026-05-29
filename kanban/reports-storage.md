@@ -1,3 +1,17 @@
+---
+uuid: "orgs-riatzukiza-ollama-benchmarks-kanban-orgs-riatzukiza-ollama-benchmarks-spec-reports-storage-md"
+title: "Reports & Storage Contract"
+status: incoming
+priority: P3
+labels: ["specs", "migrated-spec"]
+created_at: "2026-05-29T04:01:00.139Z"
+source: "orgs/riatzukiza/ollama-benchmarks/spec/reports-storage.md"
+category: "specs"
+---
+
+> Source: `orgs/riatzukiza/ollama-benchmarks/spec/reports-storage.md`
+> Migrated-to-kanban: `orgs/riatzukiza/ollama-benchmarks/kanban/reports-storage.md`
+
 # Reports & Storage Contract
 
 **Version**: 1.0.0  

@@ -1,3 +1,17 @@
+---
+uuid: "orgs-riatzukiza-ollama-benchmarks-kanban-orgs-riatzukiza-ollama-benchmarks-specs-spec-to-code-mapping-md"
+title: "Specification to Code Mapping"
+status: incoming
+priority: P3
+labels: ["specs", "migrated-spec"]
+created_at: "2026-05-29T04:01:01.502Z"
+source: "orgs/riatzukiza/ollama-benchmarks/specs/spec-to-code-mapping.md"
+category: "specs"
+---
+
+> Source: `orgs/riatzukiza/ollama-benchmarks/specs/spec-to-code-mapping.md`
+> Migrated-to-kanban: `orgs/riatzukiza/ollama-benchmarks/kanban/specs-import/spec-to-code-mapping.md`
+
 # Specification to Code Mapping
 
 **Purpose**: Connect specification requirements to actual implementation files for easy navigation and validation.

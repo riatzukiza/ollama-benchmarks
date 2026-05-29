@@ -1,3 +1,17 @@
+---
+uuid: "orgs-riatzukiza-ollama-benchmarks-kanban-orgs-riatzukiza-ollama-benchmarks-specs-review-core-md"
+title: "Core"
+status: incoming
+priority: P3
+labels: ["specs", "migrated-spec"]
+created_at: "2026-05-29T04:01:01.497Z"
+source: "orgs/riatzukiza/ollama-benchmarks/specs/review/core.md"
+category: "specs"
+---
+
+> Source: `orgs/riatzukiza/ollama-benchmarks/specs/review/core.md`
+> Migrated-to-kanban: `orgs/riatzukiza/ollama-benchmarks/kanban/specs-import/review/core.md`
+
 '# Core Framework Specification
 
 **Status**: DRAFT  

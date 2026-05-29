@@ -1,3 +1,17 @@
+---
+uuid: "orgs-riatzukiza-ollama-benchmarks-kanban-orgs-riatzukiza-ollama-benchmarks-spec-add-ollama-test-plan-md"
+title: "Add Ollama helper tests"
+status: incoming
+priority: P3
+labels: ["specs", "migrated-spec"]
+created_at: "2026-05-29T04:01:00.140Z"
+source: "orgs/riatzukiza/ollama-benchmarks/spec/add-ollama-test-plan.md"
+category: "specs"
+---
+
+> Source: `orgs/riatzukiza/ollama-benchmarks/spec/add-ollama-test-plan.md`
+> Migrated-to-kanban: `orgs/riatzukiza/ollama-benchmarks/kanban/add-ollama-test-plan.md`
+
 # Add Ollama helper tests
 
 ## Code references

@@ -1,3 +1,17 @@
+---
+uuid: "orgs-riatzukiza-ollama-benchmarks-kanban-orgs-riatzukiza-ollama-benchmarks-specs-triage-tools-md"
+title: "Tool System Specification"
+status: incoming
+priority: P3
+labels: ["specs", "migrated-spec"]
+created_at: "2026-05-29T04:01:01.501Z"
+source: "orgs/riatzukiza/ollama-benchmarks/specs/triage/tools.md"
+category: "specs"
+---
+
+> Source: `orgs/riatzukiza/ollama-benchmarks/specs/triage/tools.md`
+> Migrated-to-kanban: `orgs/riatzukiza/ollama-benchmarks/kanban/specs-import/triage/tools.md`
+
 # Tool System Specification
 
 **Status**: DRAFT  
